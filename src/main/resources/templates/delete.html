@@ -15,11 +15,12 @@
             <a class="navbar-brand" th:href="@{/todo}">To Do List</a>
         </div>
     </nav>
+
     <main class="container">
 
         <h1>Excluir Tarefa</h1>
 
-        <p>Tem certeza que deseja excluir a tarefa <strong th:text="${todo.name}"></strong>?</p>
+        <p>Tem certeza que deseja excluir a tarefa <strong th:text="${todo.title}"></strong>?</p>
 
         <form method="POST">
             <button type="submit" class="btn btn-danger">Excluir</button>

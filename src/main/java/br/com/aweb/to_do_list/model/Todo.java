@@ -37,8 +37,8 @@ public class Todo {
     @Size(min = 3, max = 100)
     @NotBlank
     @Column(length = 100, nullable = false)
-    private String name;
-    @Column(nullable = false)    
+    private String title;
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     @NotNull
     @FutureOrPresent
@@ -48,8 +48,8 @@ public class Todo {
     @Column(nullable = true)
     private LocalDate finishedAt;
 
-    public void markHasFinished(){
-        this.finishedAt = LocalDate.now();
-    }
+    // public void markHasFinished() {
+    //     this.finishedAt = LocalDate.now();
+    // }
 
 }

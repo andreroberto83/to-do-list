@@ -1,6 +1,6 @@
 package br.com.aweb.to_do_list.controller;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,30 +26,29 @@ public class TodoController {
     @Autowired
     TodoRepository todoRepository;
 
-    @GetMapping("/home")
-    public ModelAndView home() {
-        var modelAndView = new ModelAndView("home");
-        modelAndView.addObject("professor", "André Roberto da Silva");
-        var alunos = List.of(
-                "Isaac Newton",
-                "Albert Einstein",
-                "Marie Curie");
-        modelAndView.addObject("alunos", alunos);
-        modelAndView.addObject("ehVerdade", true);
-        return modelAndView;
-    }
+    // @GetMapping("/home")
+    // public ModelAndView home() {
+    // var modelAndView = new ModelAndView("home");
+    // modelAndView.addObject("professor", "André Roberto da Silva");
+    // var alunos = List.of(
+    // "Isaac Newton",
+    // "Albert Einstein",
+    // "Marie Curie");
+    // modelAndView.addObject("alunos", alunos);
+    // modelAndView.addObject("ehVerdade", true);
+    // return modelAndView;
+    // }
 
     @GetMapping
     public ModelAndView list() {
-
         // var modelAndView = new ModelAndView("list");
         // modelAndView.addObject("todos", todoRepository.findAll());
         // return modelAndView;
 
         // return new ModelAndView("list", Map.of("todos", todoRepository.findAll()));
 
-        return new ModelAndView("list", Map.of("todos", todoRepository.findAll(Sort.by("deadline"))));
-
+        return new ModelAndView("list", Map.of("todos",
+                todoRepository.findAll(Sort.by("deadline"))));
     }
 
     @GetMapping("/create")
@@ -68,7 +67,7 @@ public class TodoController {
     @GetMapping("/edit/{id}")
     public ModelAndView edit(@PathVariable Long id) {
         var todo = todoRepository.findById(id);
-        if (todo.isPresent())
+        if (todo.isPresent() && todo.get().getFinishedAt() == null)
             return new ModelAndView("form", Map.of("todo", todo.get()));
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
@@ -95,16 +94,18 @@ public class TodoController {
         return "redirect:/todo";
     }
 
+    // todo.markHasFinished();
+
     @PostMapping("/finish/{id}")
     public String finish(@PathVariable Long id) {
         var optionalTodo = todoRepository.findById(id);
-        if (optionalTodo.isPresent()){
+        if (optionalTodo.isPresent() && optionalTodo.get().getFinishedAt() == null) {
             var todo = optionalTodo.get();
-            todo.markHasFinished();
+            todo.setFinishedAt(LocalDate.now());            
             todoRepository.save(todo);
             return "redirect:/todo";
         }
-            
+
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
