@@ -1,14 +1,12 @@
-# JDK 21
-FROM eclipse-temurin:21-jdk
-
-# Diretório dentro do container
+# Etapa de build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
+COPY . .
+RUN ./mvnw clean package -DskipTests
 
-# Copia o JAR gerado para dentro do container
-COPY target/to-do-list-0.0.1-SNAPSHOT.jar app.jar
-
-# Expõe a porta do Spring Boot
+# Etapa final
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Comando para rodar a aplicação
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
