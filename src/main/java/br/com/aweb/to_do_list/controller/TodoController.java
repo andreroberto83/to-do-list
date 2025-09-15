@@ -58,6 +58,12 @@ public class TodoController {
 
     @PostMapping("/create")
     public String create(@Valid Todo todo, BindingResult result) {
+        // verifica se deadline é anterior a data atual
+        if (todo.getDeadline() != null){
+            if (todo.getDeadline().isBefore(LocalDate.now()))
+                result.rejectValue("deadline", "error.deadline", "A data deve ser hoje ou futura");
+        }
+            
         if (result.hasErrors())
             return "form";
         todoRepository.save(todo);
@@ -74,6 +80,12 @@ public class TodoController {
 
     @PostMapping("/edit/{id}")
     public String edit(@Valid Todo todo, BindingResult result) {
+        // Verifica se deadline é anterior a data atual
+        if (todo.getDeadline() != null){
+            if(todo.getDeadline().isBefore(LocalDate.now()))
+                result.rejectValue("deadline", "error.deadline", "A data deve ser hoje ou futura");
+        }
+            
         if (result.hasErrors())
             return "form";
         todoRepository.save(todo);
@@ -101,7 +113,7 @@ public class TodoController {
         var optionalTodo = todoRepository.findById(id);
         if (optionalTodo.isPresent() && optionalTodo.get().getFinishedAt() == null) {
             var todo = optionalTodo.get();
-            todo.setFinishedAt(LocalDate.now());            
+            todo.setFinishedAt(LocalDate.now());
             todoRepository.save(todo);
             return "redirect:/todo";
         }
